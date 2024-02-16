@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 98307784e662eeb4892d085eb544c02a, type: 3}
+  m_Name: FallingState
+  m_EditorClassIdentifier: 
+  runner: {fileID: 0}
+  player: {fileID: 0}
+  rb: {fileID: 0}
+  GrappleState: {fileID: 11400000, guid: 69f0f6831d715ce43b84bf9b832a4d27, type: 2}
+  IdleState: {fileID: 11400000, guid: f1b321a7c08b27846bb1c2e632a2147e, type: 2}
+  GravityScale: 4.5
+  movementColor: {r: 0.9372549, g: 0.3137255, b: 0.6117647, a: 1}
+  Accel: 0.2
+  DeAccelRate: 0.007
+  maxSpeed: 10
+  JumpForce: 15
