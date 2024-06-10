@@ -10,18 +10,33 @@ public class Respawn : MonoBehaviour
     // Start is called before the first frame update
     public GameObject Player;
     public string scene = "TitleScreen";
+
+    private Button button;
+    private Image image;
+    private TMP_Text text;
     void Start()
     {
         Player = GameObject.FindWithTag("Player");
+        button = GetComponent<Button>();
+        image = GetComponent<Image>();
+        text = transform.GetChild(0).GetComponent<TMP_Text>();
+        
     }
 
     // Update is called once per frame
     void Update()
     {
         if (Player == null) {
-            GetComponent<Button>().enabled = true;
-            GetComponent<Image>().enabled = true;
-            transform.GetChild(0).GetComponent<TMP_Text>().enabled = true;
+            button.enabled = true;
+            image.enabled = true;
+            text.enabled = true;
+            Player = GameObject.FindWithTag("Player");
+        }
+        else {
+            button.enabled = false;
+            image.enabled = false;
+            text.enabled = false;
+            
         }
     }
 

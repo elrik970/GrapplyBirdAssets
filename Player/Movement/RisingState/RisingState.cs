@@ -13,7 +13,7 @@ public class RisingState : PlayerState<Player>
     public float GravityScale = 3f;
     private Camera Camera;
 
-    public Color movementColor;
+    // public Color movementColor;
     public float Accel;
     public float DeAccelRate;
     public float maxSpeed;
@@ -23,7 +23,7 @@ public class RisingState : PlayerState<Player>
     public override void Init(Player parent) {
         base.Init(parent);
 
-        Inputs = player.Inputs;
+        Inputs = Player.Inputs;
         Inputs.Normal.Grapple.performed+=OnGrapple;
         Inputs.Normal.Jump.performed += OnJump;
 
@@ -56,12 +56,12 @@ public class RisingState : PlayerState<Player>
         if (Input.GetKey(KeyCode.D)) {
             // Debug.Log("RUNNING");
             player.MoveRight(Accel,maxSpeed);
-            player.Color(movementColor);
+            player.Color(player.movementColor);
         }
         else if (Input.GetKey(KeyCode.A)) {
             // Debug.Log("RUNNING");
             player.MoveLeft(Accel,maxSpeed);
-            player.Color(movementColor);
+            player.Color(player.movementColor);
         }
         else {
             player.Color(player.defaultColor);
@@ -81,7 +81,6 @@ public class RisingState : PlayerState<Player>
         }
     }
     void OnJump(InputAction.CallbackContext context) {
-        rb.velocity = new Vector2(rb.velocity.x,0);
-        rb.AddForce(Vector2.up*JumpForce,ForceMode2D.Impulse);
+        player.Jump();
     }
 }

@@ -24,5 +24,9 @@ public class CurrentSpeed : MonoBehaviour
         // float size = Mathf.Clamp((Mathf.Abs(rb.velocity.x)/SizeDivider),0,maxSize);
         // Debug.Log(Mathf.Abs(rb.velocity.x)/SizeDivider);
         text.fontSize = maxSize;
+
+        if (rb.velocity.x * Multiplier > PlayerPrefs.GetFloat("maxSpeed")) {
+            PlayerPrefs.SetFloat("maxSpeed",rb.velocity.x*Multiplier);
+        }
     }
 }

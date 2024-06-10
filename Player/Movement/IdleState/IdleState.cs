@@ -16,7 +16,7 @@ public class IdleState : PlayerState<Player>
     private Camera Camera;
     public ConstantForce2D ConstantForce;
 
-    public Color movementColor;
+    // public Color movementColor;
     public float Accel;
     public float maxSpeed;
     public float JumpForce;
@@ -24,9 +24,10 @@ public class IdleState : PlayerState<Player>
     public override void Init(Player parent) {
         base.Init(parent);
 
-        Inputs = player.Inputs;
+        Inputs = Player.Inputs;
         Inputs.Normal.Grapple.performed+=OnGrapple;
         Inputs.Normal.Jump.performed += OnJump;
+        Inputs.Normal.SecondAbility.performed += OnAbility;
 
         if (!player.OnGround()) {
             runner.SetState(RisingState);
@@ -52,8 +53,6 @@ public class IdleState : PlayerState<Player>
         if (!player.OnGround()) {
             runner.SetState(RisingState);
         }
-        // StickSpot = player.OnGroundOverride(Vector2.zero,0).point;
-        // ConstantForce.force = (StickSpot-player.transform.position).normalized*StickMultiplier;
     }
     // Unity Update
     public override void ChangeState() {
@@ -66,14 +65,12 @@ public class IdleState : PlayerState<Player>
     // Unity FixedUpdate
     public override void PhysicsUpdate() {
         if (Input.GetKey(KeyCode.D)) {
-            // Debug.Log("RUNNING");
             player.MoveRight(Accel,maxSpeed);
-            player.Color(movementColor);
+            player.Color(player.movementColor);
         }
         else if (Input.GetKey(KeyCode.A)) {
-            // Debug.Log("RUNNING");
             player.MoveLeft(Accel,maxSpeed);
-            player.Color(movementColor);
+            player.Color(player.movementColor);
         }
         else {
             player.Color(player.defaultColor);
@@ -95,8 +92,13 @@ public class IdleState : PlayerState<Player>
         }
     }
 
+    void OnAbility(InputAction.CallbackContext context) {
+        if (player.secondAbility != null&&player.secondAbilityCoolDown()) {
+            runner.SetState(player.secondAbility);
+        }
+    }
+
     void OnJump(InputAction.CallbackContext context) {
-        rb.velocity = new Vector2(rb.velocity.x,0);
-        rb.AddForce(Vector2.up*JumpForce,ForceMode2D.Impulse);
+        player.Jump();
     }
 }

@@ -53,6 +53,15 @@ public partial class @PlayerInputs: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""SecondAbility"",
+                    ""type"": ""Button"",
+                    ""id"": ""efed8f83-3e09-4cf5-b9db-595bd4ed8241"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -110,6 +119,17 @@ public partial class @PlayerInputs: IInputActionCollection2, IDisposable
                     ""action"": ""Jump"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""65d0830d-ce18-4c07-8067-9e362eb22a67"",
+                    ""path"": ""<Keyboard>/w"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SecondAbility"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -121,6 +141,7 @@ public partial class @PlayerInputs: IInputActionCollection2, IDisposable
         m_Normal_Grapple = m_Normal.FindAction("Grapple", throwIfNotFound: true);
         m_Normal_GrappleRelease = m_Normal.FindAction("GrappleRelease", throwIfNotFound: true);
         m_Normal_Jump = m_Normal.FindAction("Jump", throwIfNotFound: true);
+        m_Normal_SecondAbility = m_Normal.FindAction("SecondAbility", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -185,6 +206,7 @@ public partial class @PlayerInputs: IInputActionCollection2, IDisposable
     private readonly InputAction m_Normal_Grapple;
     private readonly InputAction m_Normal_GrappleRelease;
     private readonly InputAction m_Normal_Jump;
+    private readonly InputAction m_Normal_SecondAbility;
     public struct NormalActions
     {
         private @PlayerInputs m_Wrapper;
@@ -192,6 +214,7 @@ public partial class @PlayerInputs: IInputActionCollection2, IDisposable
         public InputAction @Grapple => m_Wrapper.m_Normal_Grapple;
         public InputAction @GrappleRelease => m_Wrapper.m_Normal_GrappleRelease;
         public InputAction @Jump => m_Wrapper.m_Normal_Jump;
+        public InputAction @SecondAbility => m_Wrapper.m_Normal_SecondAbility;
         public InputActionMap Get() { return m_Wrapper.m_Normal; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -210,6 +233,9 @@ public partial class @PlayerInputs: IInputActionCollection2, IDisposable
             @Jump.started += instance.OnJump;
             @Jump.performed += instance.OnJump;
             @Jump.canceled += instance.OnJump;
+            @SecondAbility.started += instance.OnSecondAbility;
+            @SecondAbility.performed += instance.OnSecondAbility;
+            @SecondAbility.canceled += instance.OnSecondAbility;
         }
 
         private void UnregisterCallbacks(INormalActions instance)
@@ -223,6 +249,9 @@ public partial class @PlayerInputs: IInputActionCollection2, IDisposable
             @Jump.started -= instance.OnJump;
             @Jump.performed -= instance.OnJump;
             @Jump.canceled -= instance.OnJump;
+            @SecondAbility.started -= instance.OnSecondAbility;
+            @SecondAbility.performed -= instance.OnSecondAbility;
+            @SecondAbility.canceled -= instance.OnSecondAbility;
         }
 
         public void RemoveCallbacks(INormalActions instance)
@@ -245,5 +274,6 @@ public partial class @PlayerInputs: IInputActionCollection2, IDisposable
         void OnGrapple(InputAction.CallbackContext context);
         void OnGrappleRelease(InputAction.CallbackContext context);
         void OnJump(InputAction.CallbackContext context);
+        void OnSecondAbility(InputAction.CallbackContext context);
     }
 }

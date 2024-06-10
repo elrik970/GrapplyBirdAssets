@@ -6,6 +6,8 @@ using Cinemachine;
 
 public class Player : MonoBehaviour
 {
+    public PlayerState<Player> secondAbility;
+
     public Camera Camera;
     public CinemachineVirtualCamera Cmvcam;
 
@@ -18,6 +20,7 @@ public class Player : MonoBehaviour
     public LayerMask GrapplingHookLayerMask;
     public float GrappleDistance;
     public LineRenderer GrapplingLineRend;
+    public GameObject GrapplingHookHitGameObject;
 
     // Grounded
     public float GroundRaycastSize;
@@ -25,17 +28,28 @@ public class Player : MonoBehaviour
     private RaycastHit2D GroundHit;
 
     public Color defaultColor;
+    public Color movementColor;
+    public Color coolDownColor;
     public SpriteRenderer sprite;
 
     public ParticleSystem CollisionPart;
 
     public float minVelocityCrash;
 
-    public PlayerInputs Inputs;
+    public static PlayerInputs Inputs;
 
-    void Awake() {
-        Inputs = new PlayerInputs();
-    }
+    public float secondAbilityPassedTime = 0f;
+    public float secondAbilityCoolDownTime = 0.5f;
+    public AudioSource dashSoundFx;
+
+    public AudioSource jumpSoundFx;
+    public float JumpForce = 15f;
+
+    public LayerMask KillLayerMask;
+
+    // void Awake() {
+    //     Inputs = new PlayerInputs();
+    // }
     void OnEnable() {
         Inputs.Enable();
     }
@@ -45,16 +59,22 @@ public class Player : MonoBehaviour
     }
     void Start()
     {
+
+        secondAbilityPassedTime = secondAbilityCoolDownTime;
         Camera = Camera.main;
         rb = GetComponent<Rigidbody2D>();
         sprite = GetComponent<SpriteRenderer>();
         Cmvcam = GameObject.FindWithTag("Cinemachine").GetComponent<CinemachineVirtualCamera>();
+        secondAbility = GetComponent<SecondAbility>().secondAbility;
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+        secondAbilityPassedTime+=Time.deltaTime;
+        if (!secondAbilityCoolDown()) {
+            Color(coolDownColor);
+        }
     }
     public bool GrapplingHookCheck() {
         Vector3 mouseWorldPos = Camera.ScreenToWorldPoint(Input.mousePosition);
@@ -62,6 +82,7 @@ public class Player : MonoBehaviour
         RaycastHit2D hit = Physics2D.Raycast(transform.position,(mouseWorldPos-transform.position).normalized,GrappleDistance,GrapplingHookLayerMask);
         if (hit.collider != null) {
             GrapplingHookSpotPosition = hit.point;
+            GrapplingHookHitGameObject = hit.collider.gameObject;
             return true;
         }
         return false;
@@ -119,4 +140,32 @@ public class Player : MonoBehaviour
     public void Color(Color color) {
         sprite.color = color;
     }
+
+    public bool secondAbilityCoolDown() {
+        if (secondAbilityPassedTime > secondAbilityCoolDownTime) {
+            
+            return true;
+
+        }
+        else {
+            return false;
+        }
+    }
+
+    public void checkForDeath() {
+        RaycastHit2D Hit = Physics2D.CircleCast(transform.position, GroundRaycastSize,Vector2.zero ,0,KillLayerMask);
+        if (Hit.collider != null) {
+            GameObject fx = (GameObject)GameObject.Instantiate(DeathEffects,transform.position,Quaternion.identity);
+            Destroy(gameObject);
+            Cmvcam.Follow = fx.transform;
+        }
+    }
+    public void Jump() {
+        rb.velocity = new Vector2(rb.velocity.x,0);
+        rb.AddForce(Vector2.up*JumpForce,ForceMode2D.Impulse);
+        jumpSoundFx.pitch = Random.Range(1.5f, 2f);
+        jumpSoundFx.Play();
+    }
+
+    
 }

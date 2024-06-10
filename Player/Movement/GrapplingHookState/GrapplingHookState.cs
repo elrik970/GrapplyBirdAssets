@@ -19,18 +19,29 @@ public class GrapplingHookState : PlayerState<Player>
     public float TimeToFullyHook;
     private float hookedTime;
 
-    public Color movementColor;
+    // public Color movementColor;
     public float Accel;
     public float maxSpeed;
 
     public float JumpForce;
 
+    private Vector3 startingPos;
+    private Vector3 difference;
+
+    public ActivatedByGrapplingHook activated;
+
 
     public override void Init(Player parent) {
         base.Init(parent);
+
+        activated = player.GrapplingHookHitGameObject.GetComponent<ActivatedByGrapplingHook>();
+
+        if (activated != null) {
+            activated.OnHit();
+        }
         timePassed = 0f;
         Camera = Camera.main;
-        Inputs = player.Inputs;
+        Inputs = Player.Inputs;
         Inputs.Normal.GrappleRelease.performed+=OnGrappleRelease;
         Inputs.Normal.Jump.performed += OnJump;
         GrapplingHookObject = (GameObject)GameObject.Instantiate(GrapplingHookPrefab,player.GrapplingHookSpotPosition,Quaternion.identity);
@@ -40,13 +51,23 @@ public class GrapplingHookState : PlayerState<Player>
         rb.gravityScale = GravityScale;
         rb.drag = Drag;
 
+        
+
         player.GrapplingLineRend.enabled = true;
+
+        startingPos = player.GrapplingHookSpotPosition;
+
+        difference = startingPos-player.GrapplingHookHitGameObject.transform.position;
         
 
         hookedTime = 0f;
     }
     // Unity Update
     public override void ConstantUpdate() {
+
+        if (player.GrapplingHookHitGameObject == null||activated!=null&&activated.End) {
+            runner.SetState(IdleState);
+        }
         hookedTime+=Time.deltaTime;
         if (hookedTime < TimeToFullyHook) {
             Vector3 GrapplingHookPos = GrapplingHookObject.transform.position;
@@ -57,10 +78,20 @@ public class GrapplingHookState : PlayerState<Player>
             player.GrapplingLineRend.SetPosition(1,new Vector3(playerPos.x-AddAmount.x,playerPos.y-AddAmount.y,playerPos.z));
         }
         else {
-            player.GrapplingLineRend.SetPosition(1,player.GrapplingHookSpotPosition);
+            player.GrapplingLineRend.SetPosition(1,GrapplingHookObject.transform.position);
         }
         
         player.GrapplingLineRend.SetPosition(0,player.transform.position);
+
+        
+
+
+        GrapplingHookObject.transform.position = player.GrapplingHookHitGameObject.transform.position+difference;
+
+
+
+        
+        // Debug.Log(GrapplingHookObject.transform.position);
         
     }
     // Unity Update
@@ -76,12 +107,12 @@ public class GrapplingHookState : PlayerState<Player>
         if (Input.GetKey(KeyCode.D)) {
             // Debug.Log("RUNNING");
             player.MoveRight(Accel,maxSpeed);
-            player.Color(movementColor);
+            player.Color(player.movementColor);
         }
         else if (Input.GetKey(KeyCode.A)) {
             // Debug.Log("RUNNING");
             player.MoveLeft(Accel,maxSpeed);
-            player.Color(movementColor);
+            player.Color(player.movementColor);
         }
         else {
             player.Color(player.defaultColor);
